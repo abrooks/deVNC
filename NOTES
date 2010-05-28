@@ -1,0 +1,35 @@
+As far as design thoughts go I realized that in an X11 environment the
+right way to enroll, de-enroll windows for sharing is mark windows via
+X11 window properties which means the initial management interface is
+merely xprop. This makes it easy for a windowmanager, a CLI an a GUI
+tool all to be used simultaneously and we really have nothing to
+implement for mechanism, just a very thin UI. We would also use the
+X11 properties to indicate remote user focus and, perhaps, remote
+urgency (which might translate to local urgency).
+
+Random implementation notes:
+
+    - I noticed a "blackout_regions" notion while trolling the
+      sources, this seems like it might be an interesting feature to
+      use at some point. the two X11 screen grabbing mechanisms (which
+      are used to detect deltas in x11vnc) are XGetSubImage and
+      XShmGetImage (I presume we want to use this one), both of which
+      are happy to grab any rectangle on the screen, not necessarily
+      the whole desktop and should serve window grabbing nicely.
+
+    - I've been thinking of using XMPP as the management communication
+      mechanism allowing the manager to send human readable IP:PORT
+      links to users who are using conventional VNC clients or, if
+      a remote manager is running, it would be a non-available XMPP
+      presence which would be the target if detected (or something
+      like that). XMPP could also send a per-session auth-cookie
+      / password.
+
+    - The ports should be random high-ports since these will quickly
+      and easily go beyond the "standard" VNC ports. Maybe it would
+      only use random high-ports if it detected a remote manager.
+
+I'm still thinking through the sharing workflows. Should we aim to
+support more than two individuals sharing a pool of windows? ("pool"
+is my notion of the set of windows shared and available to both (all)
+parties, this becomes more complex if there are more than two people).
